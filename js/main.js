@@ -1,7 +1,7 @@
 var map = L.map('map').fitWorld();
 
 var issIcon = L.icon({
-    iconUrl: '../img/iss.png',
+    iconUrl: './img/iss.png',
     iconSize: [60, 60],
     iconAnchor: [30, 30],
     popupAnchor: [-3, 16]
@@ -22,21 +22,21 @@ function loadMap(){
 
     function trackISS () {
         $.ajax({
-            url: "libraries/php/getIssPosition.php",
+            url: "./php/issTracker.php",
             type: 'GET',
             dataType: 'json',
             success: function(result){
-                console.log(result);
+                console.log(result.data.info.iss_position.latitude);
                 if(result){
-                    updateISSMarker(result['latitude'], 
-                    result['longitude']);
+                    updateISSMarker(result.data.info.iss_position.latitude, 
+                        result.data.info.iss_position.longitude);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown){
                 alert(`Error in ISS pos: ${textStatus} ${errorThrown} ${jqXHR}`);
             }
         });
-         issTimeoutID = setTimeout(trackISS, 3000); 
+         issTimeoutID = setTimeout(trackISS, 1000); 
     }
     
     // ISS marker and circle update function
@@ -48,7 +48,7 @@ function loadMap(){
         issMarker = new L.marker([lat, lon], {icon: issIcon}).addTo(map);
         issCircle = new L.circle([lat, lon], {color: 'gray', opacity: .5}).addTo(map);
     
-        map.flyTo([lat, lon], zoomOffset=5, animate=true);
+        map.setView([lat, lon]);
     }
 
     trackISS();
@@ -73,3 +73,5 @@ function loadMap(){
     });
     */
 }   
+
+loadMap();
