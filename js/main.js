@@ -9,7 +9,6 @@ var issIcon = L.icon({
 
 var issTimeoutID;
 var issMarker;
-var issCircle;
 
 function loadMap(){
 
@@ -18,7 +17,7 @@ function loadMap(){
         crossOrigin: true
     }).addTo(map)
 
-    map.setZoom(2.5);
+    map.setZoom(3.5);
 
     function trackISS () {
         $.ajax({
@@ -41,37 +40,13 @@ function loadMap(){
     
     // ISS marker and circle update function
     function updateISSMarker(lat, lon) {
-        if(issMarker != undefined && issCircle != undefined){
+        if(issMarker != undefined) { 
             map.removeLayer(issMarker);
-            map.removeLayer(issCircle);
         }
         issMarker = new L.marker([lat, lon], {icon: issIcon}).addTo(map);
-        issCircle = new L.circle([lat, lon], {color: 'gray', opacity: .5}).addTo(map);
-    
+        
         map.setView([lat, lon]);
     }
-
     trackISS();
-
-
-    /*
-    $.ajax({
-        "message": "success", 
-        "timestamp": UNIX_TIME_STAMP, 
-        "iss_position": {
-          "latitude": CURRENT_LATITUDE, 
-          "longitude": CURRENT_LONGITUDE
-        },
-    
-    	success: function(result) { 
-
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.log(textStatus, errorThrown);
-        }
-
-    });
-    */
 }   
-
 loadMap();
