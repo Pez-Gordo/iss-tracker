@@ -1,4 +1,11 @@
-var map = L.map('map').fitWorld();
+var map = L.map('map');
+
+L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=ypfODnzHuwl0bYyyvG3i', {
+        attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+        crossOrigin: true
+    }).addTo(map)
+
+var tracker = true;
 
 var issIcon = L.icon({
     iconUrl: './img/iss.png',
@@ -10,14 +17,26 @@ var issIcon = L.icon({
 var issTimeoutID;
 var issMarker;
 
+$(window).keypress(function (e) {
+    //use e.which to know what key was pressed
+    var keyCode = e.which;
+    //console.log(e, keyCode, e.which)
+    if (keyCode == 116) {
+        if (tracker === false) {
+            tracker = true;
+        }
+        else {
+            tracker = false;
+        }
+        //console.log("You pressed T!");
+        //alert("You pressed W!");
+    }
+})
+
+
 function loadMap(){
 
-    L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=ypfODnzHuwl0bYyyvG3i', {
-        attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
-        crossOrigin: true
-    }).addTo(map)
-
-    map.setZoom(3.5);
+    map.setZoom(5.5);
 
     function trackISS () {
         $.ajax({
@@ -25,7 +44,7 @@ function loadMap(){
             type: 'GET',
             dataType: 'json',
             success: function(result){
-                console.log(result.data.info.iss_position.latitude);
+                //console.log(result.data.info.iss_position.latitude);
                 if(result){
                     updateISSMarker(result.data.info.iss_position.latitude, 
                         result.data.info.iss_position.longitude);
@@ -43,10 +62,13 @@ function loadMap(){
         if(issMarker != undefined) { 
             map.removeLayer(issMarker);
         }
+
         issMarker = new L.marker([lat, lon], {icon: issIcon}).addTo(map);
-        
-        map.setView([lat, lon]);
+        if (tracker) {
+            map.setView([lat, lon]);
+        }
     }
     trackISS();
 }   
+
 loadMap();
